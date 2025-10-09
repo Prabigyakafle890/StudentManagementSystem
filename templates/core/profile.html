@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - EduManager{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-user me-2"></i>User Profile</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label"><strong>Username:</strong></label>
+                    <div class="col-sm-9">
+                        <p class="form-control-plaintext">{{ user.username }}</p>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label"><strong>Email:</strong></label>
+                    <div class="col-sm-9">
+                        <p class="form-control-plaintext">{{ user.email }}</p>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label"><strong>First Name:</strong></label>
+                    <div class="col-sm-9">
+                        <p class="form-control-plaintext">{{ user.first_name|default:"Not set" }}</p>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label"><strong>Last Name:</strong></label>
+                    <div class="col-sm-9">
+                        <p class="form-control-plaintext">{{ user.last_name|default:"Not set" }}</p>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label"><strong>Role:</strong></label>
+                    <div class="col-sm-9">
+                        <p class="form-control-plaintext">
+                            {% if user.is_staff %}
+                                <span class="badge bg-danger">Administrator</span>
+                            {% elif user.teacher %}
+                                <span class="badge bg-success">Teacher</span>
+                            {% elif user.student %}
+                                <span class="badge bg-info">Student</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Unknown</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                {% if user.student %}
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label"><strong>Roll Number:</strong></label>
+                    <div class="col-sm-9">
+                        <p class="form-control-plaintext">{{ user.student.roll_no }}</p>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label"><strong>Class:</strong></label>
+                    <div class="col-sm-9">
+                        <p class="form-control-plaintext">{{ user.student.student_class }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if user.teacher %}
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label"><strong>Subject:</strong></label>
+                    <div class="col-sm-9">
+                        <p class="form-control-plaintext">{{ user.teacher.subject }}</p>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label"><strong>Phone:</strong></label>
+                    <div class="col-sm-9">
+                        <p class="form-control-plaintext">{{ user.teacher.phone }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="text-center">
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

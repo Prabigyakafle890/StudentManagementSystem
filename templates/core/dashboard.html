@@ -1,0 +1,756 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - EduManager{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 3rem 0;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+        animation: pulse-bg 4s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-bg {
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 0.8; }
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .welcome-title {
+        font-family: 'Poppins', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .welcome-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        font-weight: 300;
+    }
+    
+    .stats-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border: none;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    
+    .stats-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--primary-gradient);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    }
+    
+    .stats-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .stats-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stats-icon::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: all 0.6s ease;
+    }
+    
+    .stats-card:hover .stats-icon::after {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .stats-number {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .stats-label {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .stats-trend {
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .trend-up {
+        color: #10b981;
+    }
+    
+    .trend-down {
+        color: #ef4444;
+    }
+    
+    .quick-actions {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .action-btn {
+        background: var(--primary-gradient);
+        border: none;
+        border-radius: 15px;
+        color: white;
+        padding: 1.25rem 2rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+        margin-bottom: 1rem;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .action-btn i {
+        font-size: 1.5rem;
+        width: 40px;
+        height: 40px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .recent-activity {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-item:hover {
+        background: rgba(102, 126, 234, 0.05);
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 0 -1rem;
+    }
+    
+    .activity-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+    }
+    
+    .activity-content {
+        flex: 1;
+    }
+    
+    .activity-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+    
+    .activity-desc {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+    
+    .activity-time {
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+    
+    .progress-ring {
+        width: 120px;
+        height: 120px;
+        position: relative;
+    }
+    
+    .progress-ring svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+    }
+    
+    .progress-ring-circle {
+        fill: none;
+        stroke-width: 8;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.5s ease;
+    }
+    
+    .progress-bg {
+        stroke: rgba(102, 126, 234, 0.1);
+    }
+    
+    .progress-fill {
+        stroke: url(#gradient);
+        stroke-dasharray: 314;
+        stroke-dashoffset: 0;
+        animation: progress-animation 2s ease-out;
+    }
+    
+    @keyframes progress-animation {
+        from { stroke-dashoffset: 314; }
+        to { stroke-dashoffset: 0; }
+    }
+    
+    .progress-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+    
+    @media (max-width: 768px) {
+        .welcome-title {
+            font-size: 2rem;
+        }
+        
+        .stats-number {
+            font-size: 2rem;
+        }
+        
+        .action-btn {
+            padding: 1rem 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Hero Section -->
+    <div class="hero-section" data-aos="fade-down">
+        <div class="hero-content text-center">
+            <h1 class="welcome-title">
+                Welcome back, {{ user.first_name|default:user.username }}! 👋
+            </h1>
+            <p class="welcome-subtitle">
+                {% if user.is_staff %}
+                    Admin Dashboard - Manage your educational institution
+                {% elif user.teacher %}
+                    Teacher Dashboard - Inspire and educate students
+                {% else %}
+                    Student Dashboard - Your learning journey continues
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    {% if user.is_staff %}
+        <!-- Admin Dashboard -->
+        <div class="row" data-aos="fade-up">
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-icon" style="background: var(--primary-gradient);">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="stats-number" data-count="{{ total_students|default:0 }}">0</div>
+                    <div class="stats-label">Total Students</div>
+                    <div class="stats-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>12% from last month</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-icon" style="background: var(--success-gradient);">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="stats-number" data-count="{{ total_teachers|default:0 }}">0</div>
+                    <div class="stats-label">Total Teachers</div>
+                    <div class="stats-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>5% from last month</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-icon" style="background: var(--warning-gradient);">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stats-number" data-count="{{ total_courses|default:0 }}">0</div>
+                    <div class="stats-label">Total Courses</div>
+                    <div class="stats-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>8% from last month</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-icon" style="background: var(--danger-gradient);">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="stats-number" data-count="{{ total_enrollments|default:0 }}">0</div>
+                    <div class="stats-label">Enrollments</div>
+                    <div class="stats-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>15% from last month</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row" data-aos="fade-up" data-aos-delay="200">
+            <div class="col-lg-8">
+                <div class="quick-actions">
+                    <h3 class="mb-4">
+                        <i class="fas fa-bolt me-2" style="color: var(--primary-color);"></i>
+                        Quick Actions
+                    </h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="{% url 'student_list' %}" class="action-btn">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <div>Manage Students</div>
+                                    <small style="opacity: 0.8;">View and edit student records</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'teacher_list' %}" class="action-btn" style="background: var(--success-gradient);">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>
+                                    <div>Manage Teachers</div>
+                                    <small style="opacity: 0.8;">View and edit teacher profiles</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'grade_entry' %}" class="action-btn" style="background: var(--warning-gradient);">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <div>Grade Management</div>
+                                    <small style="opacity: 0.8;">Enter and manage grades</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'attendance_entry' %}" class="action-btn" style="background: var(--danger-gradient);">
+                                <i class="fas fa-calendar-check"></i>
+                                <div>
+                                    <div>Attendance</div>
+                                    <small style="opacity: 0.8;">Mark and track attendance</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="quick-actions text-center">
+                    <h4 class="mb-3">System Performance</h4>
+                    <div class="progress-ring">
+                        <svg>
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#667eea"/>
+                                    <stop offset="100%" style="stop-color:#764ba2"/>
+                                </linearGradient>
+                            </defs>
+                            <circle class="progress-ring-circle progress-bg" cx="60" cy="60" r="50"/>
+                            <circle class="progress-ring-circle progress-fill" cx="60" cy="60" r="50" style="stroke-dashoffset: 78.5;"/>
+                        </svg>
+                        <div class="progress-text">85%</div>
+                    </div>
+                    <p class="mt-3 text-muted">Overall system efficiency</p>
+                </div>
+            </div>
+        </div>
+
+    {% elif user.teacher %}
+        <!-- Teacher Dashboard -->
+        <div class="row" data-aos="fade-up">
+            <div class="col-lg-4 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-icon" style="background: var(--primary-gradient);">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stats-number" data-count="{{ teacher_courses.count|default:0 }}">0</div>
+                    <div class="stats-label">My Courses</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-icon" style="background: var(--success-gradient);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stats-number" data-count="{{ total_students|default:0 }}">0</div>
+                    <div class="stats-label">My Students</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-icon" style="background: var(--warning-gradient);">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stats-number" data-count="{{ grades_entered|default:0 }}">0</div>
+                    <div class="stats-label">Grades Entered</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teacher Quick Actions -->
+        <div class="row" data-aos="fade-up" data-aos-delay="200">
+            <div class="col-lg-8">
+                <div class="quick-actions">
+                    <h3 class="mb-4">
+                        <i class="fas fa-chalkboard-teacher me-2" style="color: var(--primary-color);"></i>
+                        Teaching Tools
+                    </h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="{% url 'course_list' %}" class="action-btn" style="background: var(--primary-gradient);">
+                                <i class="fas fa-book"></i>
+                                <div>
+                                    <div>My Courses</div>
+                                    <small style="opacity: 0.8;">View and manage your courses</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'teacher_students' %}" class="action-btn" style="background: var(--info-gradient);">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <div>My Students</div>
+                                    <small style="opacity: 0.8;">View students in your courses</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'grade_entry' %}" class="action-btn">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <div>Grade Entry</div>
+                                    <small style="opacity: 0.8;">Enter and manage student grades</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'attendance_entry' %}" class="action-btn" style="background: var(--success-gradient);">
+                                <i class="fas fa-calendar-check"></i>
+                                <div>
+                                    <div>Attendance</div>
+                                    <small style="opacity: 0.8;">Mark student attendance</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="recent-activity">
+                    <h4 class="mb-3">My Courses</h4>
+                    {% for course in teacher_courses %}
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: var(--primary-gradient);">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">{{ course.name }}</div>
+                            <div class="activity-desc">{{ course.enrollment_set.count }} students enrolled</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <!-- Student Dashboard -->
+        <div class="row" data-aos="fade-up">
+            <div class="col-lg-4 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-icon" style="background: var(--primary-gradient);">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stats-number" data-count="{{ enrolled_courses.count|default:0 }}">0</div>
+                    <div class="stats-label">Enrolled Courses</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-icon" style="background: var(--success-gradient);">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stats-number" data-count="{{ total_grades|default:0 }}">0</div>
+                    <div class="stats-label">Total Grades</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-icon" style="background: var(--warning-gradient);">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stats-number" data-count="{{ attendance_percentage|default:0 }}">0</div>
+                    <div class="stats-label">Attendance %</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Quick Actions -->
+        <div class="row" data-aos="fade-up" data-aos-delay="200">
+            <div class="col-lg-8">
+                <div class="quick-actions">
+                    <h3 class="mb-4">
+                        <i class="fas fa-user-graduate me-2" style="color: var(--primary-color);"></i>
+                        Student Portal
+                    </h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="{% url 'course_list' %}" class="action-btn" style="background: var(--primary-gradient);">
+                                <i class="fas fa-book"></i>
+                                <div>
+                                    <div>My Courses</div>
+                                    <small style="opacity: 0.8;">View your enrolled courses</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'my_grades' %}" class="action-btn">
+                                <i class="fas fa-chart-line"></i>
+                                <div>
+                                    <div>My Grades</div>
+                                    <small style="opacity: 0.8;">View your academic performance</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'my_attendance' %}" class="action-btn" style="background: var(--success-gradient);">
+                                <i class="fas fa-calendar-alt"></i>
+                                <div>
+                                    <div>My Attendance</div>
+                                    <small style="opacity: 0.8;">Track your attendance record</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="recent-activity">
+                    <h4 class="mb-3">Recent Grades</h4>
+                    {% for grade in recent_grades %}
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: var(--success-gradient);">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">{{ grade.course.name }}</div>
+                            <div class="activity-desc">Grade: {{ grade.grade }} ({{ grade.marks }}%)</div>
+                        </div>
+                        <div class="activity-time">{{ grade.created_at|date:"M d" }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Animated counter
+    function animateCounter(element) {
+        const dataCount = element.getAttribute('data-count');
+        const target = parseInt(dataCount) || 0; // Default to 0 if NaN
+        const duration = 2000;
+        const start = 0;
+        const increment = target / (duration / 16);
+        let current = start;
+        
+        // Handle edge case where target is 0
+        if (target === 0) {
+            element.textContent = '0';
+            return;
+        }
+        
+        const timer = setInterval(() => {
+            current += increment;
+            element.textContent = Math.floor(current);
+            
+            if (current >= target) {
+                element.textContent = target;
+                clearInterval(timer);
+            }
+        }, 16);
+    }
+    
+    // Initialize counters when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        const counters = document.querySelectorAll('[data-count]');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        counters.forEach(counter => {
+            observer.observe(counter);
+        });
+    });
+    
+    // Add sparkle effect to stats cards
+    document.querySelectorAll('.stats-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            createSparkles(this);
+        });
+    });
+    
+    function createSparkles(element) {
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+                const sparkle = document.createElement('div');
+                sparkle.innerHTML = '✨';
+                sparkle.style.position = 'absolute';
+                sparkle.style.fontSize = '1rem';
+                sparkle.style.pointerEvents = 'none';
+                sparkle.style.left = Math.random() * element.offsetWidth + 'px';
+                sparkle.style.top = Math.random() * element.offsetHeight + 'px';
+                sparkle.style.animation = 'sparkle 1s ease-out forwards';
+                
+                element.appendChild(sparkle);
+                
+                setTimeout(() => {
+                    sparkle.remove();
+                }, 1000);
+            }, i * 100);
+        }
+    }
+    
+    // Add sparkle animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes sparkle {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1) rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+{% endblock %}

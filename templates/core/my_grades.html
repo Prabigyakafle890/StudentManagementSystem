@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}My Grades - EduManager{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-star me-2"></i>My Grades</h2>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Teacher</th>
+                                <th>Marks</th>
+                                <th>Grade</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for grade in grades %}
+                            <tr>
+                                <td>
+                                    <strong>{{ grade.course.name }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ grade.course.code }}</small>
+                                </td>
+                                <td>{{ grade.course.teacher.name|default:"Not assigned" }}</td>
+                                <td><strong>{{ grade.marks }}/100</strong></td>
+                                <td>
+                                    {% if grade.grade == 'A+' or grade.grade == 'A' %}
+                                        <span class="badge bg-success fs-6">{{ grade.grade }}</span>
+                                    {% elif grade.grade == 'B+' or grade.grade == 'B' or grade.grade == 'A-' %}
+                                        <span class="badge bg-primary fs-6">{{ grade.grade }}</span>
+                                    {% elif grade.grade == 'C+' or grade.grade == 'C' or grade.grade == 'B-' %}
+                                        <span class="badge bg-warning fs-6">{{ grade.grade }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger fs-6">{{ grade.grade }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        {% if grade.marks >= 90 %}
+                                            <div class="progress-bar bg-success" style="width: {{ grade.marks }}%">{{ grade.marks }}%</div>
+                                        {% elif grade.marks >= 70 %}
+                                            <div class="progress-bar bg-primary" style="width: {{ grade.marks }}%">{{ grade.marks }}%</div>
+                                        {% elif grade.marks >= 50 %}
+                                            <div class="progress-bar bg-warning" style="width: {{ grade.marks }}%">{{ grade.marks }}%</div>
+                                        {% else %}
+                                            <div class="progress-bar bg-danger" style="width: {{ grade.marks }}%">{{ grade.marks }}%</div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No grades found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {% if grades %}
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h4>{{ average_marks|floatformat:1 }}</h4>
+                        <p>Average Marks</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h4>{{ total_courses }}</h4>
+                        <p>Total Courses</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h4>{{ highest_grade }}</h4>
+                        <p>Best Grade</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="mt-3">
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

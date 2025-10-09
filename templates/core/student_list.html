@@ -1,0 +1,435 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student Directory - EduManager{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 3rem 0;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+        animation: pulse-bg 4s ease-in-out infinite;
+    }
+    
+    .search-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .search-card:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-5px);
+    }
+    
+    .student-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+    }
+    
+    .student-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--primary-gradient);
+    }
+    
+    .student-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 50px rgba(102, 126, 234, 0.2);
+    }
+    
+    .student-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        font-weight: bold;
+        margin-right: 1.5rem;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .student-card:hover .student-avatar {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    .student-name {
+        font-family: 'Poppins', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .student-id {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(79, 172, 254, 0.1) 100%);
+        color: var(--primary-color);
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+    
+    .student-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .info-badge {
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(226, 232, 240, 0.5);
+        padding: 0.5rem 1rem;
+        border-radius: 15px;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        transition: all 0.3s ease;
+    }
+    
+    .info-badge:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .actions-btn {
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .actions-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .search-input {
+        height: 60px;
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        font-size: 1.1rem;
+        padding: 1rem 3rem 1rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .search-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        transform: translateY(-2px);
+        background: white;
+    }
+    
+    .search-icon {
+        position: absolute;
+        right: 1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary-color);
+        font-size: 1.2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary-color);
+        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        font-family: 'Poppins', sans-serif;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        margin: 2rem 0;
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="page-header text-center" data-aos="fade-down">
+        <h1 class="page-title">
+            <i class="fas fa-users me-3"></i>Student Directory
+        </h1>
+        <p class="lead mb-0" style="opacity: 0.9;">Manage and explore your student community</p>
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats-grid" data-aos="fade-up">
+        <div class="stat-card">
+            <div class="stat-number" data-count="{{ students.count }}">0</div>
+            <p class="mb-0 fw-bold">Total Students</p>
+            <small class="text-muted">Enrolled</small>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" data-count="{{ students|length }}">0</div>
+            <p class="mb-0 fw-bold">Active Students</p>
+            <small class="text-muted">Current Session</small>
+        </div>
+    </div>
+
+    <!-- Search Card -->
+    <div class="search-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="position-relative">
+                    <input 
+                        type="text" 
+                        id="studentSearch" 
+                        class="form-control search-input" 
+                        placeholder="Search students by name, roll number, email, or class..."
+                    >
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                {% if user.is_staff %}
+                <a href="/admin/core/student/add/" class="btn actions-btn">
+                    <i class="fas fa-plus me-2"></i>Add New Student
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Students Grid -->
+    <div class="row" id="studentsContainer">
+        {% for student in students %}
+        <div class="col-lg-6 student-item" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:200 }}">
+            <div class="student-card">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start">
+                        <div class="student-avatar">
+                            {{ student.name.0|upper }}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h3 class="student-name">{{ student.name }}</h3>
+                            <div class="student-id">Roll No: {{ student.roll_no }}</div>
+                            
+                            <div class="student-info">
+                                <div class="info-badge">
+                                    <i class="fas fa-envelope me-2"></i>{{ student.email }}
+                                </div>
+                                <div class="info-badge">
+                                    <i class="fas fa-graduation-cap me-2"></i>{{ student.student_class }}
+                                </div>
+                                <div class="info-badge">
+                                    <i class="fas fa-user me-2"></i>{{ student.gender }}
+                                </div>
+                                <div class="info-badge">
+                                    <i class="fas fa-calendar me-2"></i>{{ student.date_of_birth|date:"M d, Y" }}
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Class</small>
+                                        <strong class="text-primary">{{ student.student_class }}</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Gender</small>
+                                        <strong class="text-success">{{ student.gender }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if user.is_staff %}
+                            <div class="mt-3 d-flex gap-2">
+                                <a href="/admin/core/student/{{ student.id }}/change/" class="btn actions-btn btn-sm">
+                                    <i class="fas fa-edit me-1"></i>Edit Student
+                                </a>
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-chart-bar me-1"></i>View Profile
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="empty-state">
+                <i class="fas fa-user-graduate empty-icon"></i>
+                <h3 class="text-muted">No Students Found</h3>
+                <p class="text-muted mb-4">Start by adding your first student to the system.</p>
+                {% if user.is_staff %}
+                <a href="/admin/core/student/add/" class="btn actions-btn">
+                    <i class="fas fa-plus me-2"></i>Add First Student
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="text-center mt-4" data-aos="fade-up">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Animated counter
+    function animateCounter(element) {
+        const target = parseInt(element.getAttribute('data-count'));
+        const duration = 2000;
+        let current = 0;
+        const increment = target / (duration / 16);
+        
+        const timer = setInterval(() => {
+            current += increment;
+            element.textContent = Math.floor(current);
+            
+            if (current >= target) {
+                element.textContent = target;
+                clearInterval(timer);
+            }
+        }, 16);
+    }
+    
+    // Initialize counters
+    document.addEventListener('DOMContentLoaded', function() {
+        const counters = document.querySelectorAll('[data-count]');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        counters.forEach(counter => observer.observe(counter));
+        
+        // Search functionality
+        const searchInput = document.getElementById('studentSearch');
+        const studentItems = document.querySelectorAll('.student-item');
+        
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            studentItems.forEach(item => {
+                const studentText = item.textContent.toLowerCase();
+                if (studentText.includes(searchTerm)) {
+                    item.style.display = 'block';
+                    item.style.animation = 'fadeIn 0.3s ease';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+        
+        // Add sparkle effect to cards
+        document.querySelectorAll('.student-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.borderImage = 'linear-gradient(45deg, #667eea, #764ba2, #4facfe, #00f2fe) 1';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.borderImage = 'none';
+            });
+        });
+    });
+
+    // CSS for fade-in animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+{% endblock %}

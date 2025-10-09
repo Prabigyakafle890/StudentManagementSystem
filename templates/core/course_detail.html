@@ -1,0 +1,368 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course.name }} - EduManager{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 3rem 0;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+        animation: pulse-bg 4s ease-in-out infinite;
+    }
+    
+    .course-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .course-card .card-header {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 1.5rem 2rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .course-info-item {
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+        transition: all 0.3s ease;
+    }
+    
+    .course-info-item:hover {
+        background: rgba(102, 126, 234, 0.05);
+        padding-left: 1rem;
+        border-radius: 10px;
+        border-bottom: 1px solid transparent;
+    }
+    
+    .student-item {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(226, 232, 240, 0.5);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .student-item:hover {
+        transform: translateX(10px);
+        border-color: var(--primary-color);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+    }
+    
+    .student-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: white;
+        font-weight: bold;
+        margin-right: 1rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .student-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+    
+    .student-details {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    .enrollment-badge {
+        background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+        color: var(--primary-color);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1px solid rgba(79, 172, 254, 0.2);
+    }
+    
+    .course-code-badge {
+        background: var(--warning-gradient);
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 25px;
+        font-weight: bold;
+        font-size: 1rem;
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        position: relative;
+        z-index: 2;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary-color);
+        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        font-family: 'Poppins', sans-serif;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        margin: 2rem 0;
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="page-header text-center" data-aos="fade-down">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="page-title mb-2">
+                    <i class="fas fa-book me-3"></i>{{ course.name }}
+                </h1>
+                <p class="lead mb-0" style="opacity: 0.9;">{{ course.description|truncatechars:100 }}</p>
+            </div>
+            <div class="course-code-badge">
+                {{ course.code }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Statistics -->
+    <div class="stats-grid" data-aos="fade-up">
+        <div class="stat-card">
+            <div class="stat-number" data-count="{{ enrollments.count }}">0</div>
+            <p class="mb-0 fw-bold">Enrolled Students</p>
+            <small class="text-muted">Active Enrollments</small>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" data-count="{{ total_assignments|default:0 }}">0</div>
+            <p class="mb-0 fw-bold">Assignments</p>
+            <small class="text-muted">Total Given</small>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" data-count="{{ average_grade|default:0 }}">0</div>
+            <p class="mb-0 fw-bold">Average Grade</p>
+            <small class="text-muted">Class Performance</small>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Course Information -->
+        <div class="col-lg-4" data-aos="fade-right">
+            <div class="course-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Course Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="course-info-item">
+                        <div class="d-flex justify-content-between">
+                            <strong><i class="fas fa-book me-2"></i>Course Name:</strong>
+                            <span>{{ course.name }}</span>
+                        </div>
+                    </div>
+                    <div class="course-info-item">
+                        <div class="d-flex justify-content-between">
+                            <strong><i class="fas fa-tag me-2"></i>Course Code:</strong>
+                            <span class="text-primary fw-bold">{{ course.code }}</span>
+                        </div>
+                    </div>
+                    <div class="course-info-item">
+                        <div class="d-flex justify-content-between">
+                            <strong><i class="fas fa-chalkboard-teacher me-2"></i>Teacher:</strong>
+                            <span>{{ course.teacher.name|default:"Not assigned" }}</span>
+                        </div>
+                    </div>
+                    <div class="course-info-item">
+                        <div class="d-flex justify-content-between">
+                            <strong><i class="fas fa-users me-2"></i>Total Students:</strong>
+                            <span class="badge bg-primary">{{ enrollments.count }}</span>
+                        </div>
+                    </div>
+                    <div class="course-info-item">
+                        <div class="d-flex flex-column">
+                            <strong class="mb-2"><i class="fas fa-align-left me-2"></i>Description:</strong>
+                            <p class="text-muted mb-0">{{ course.description|default:"No description available." }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enrolled Students -->
+        <div class="col-lg-8" data-aos="fade-left">
+            <div class="course-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-users me-2"></i>Enrolled Students ({{ enrollments.count }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if enrollments %}
+                        <div class="row">
+                            {% for enrollment in enrollments %}
+                            <div class="col-md-6 mb-3">
+                                <div class="student-item d-flex align-items-center">
+                                    <div class="student-avatar">
+                                        {{ enrollment.student.name.0|upper }}
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="student-name">{{ enrollment.student.name }}</div>
+                                        <div class="student-details">
+                                            <i class="fas fa-id-card me-1"></i>{{ enrollment.student.roll_no }}
+                                            <span class="mx-2">•</span>
+                                            <i class="fas fa-graduation-cap me-1"></i>{{ enrollment.student.student_class }}
+                                        </div>
+                                        <div class="mt-2">
+                                            <span class="enrollment-badge">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                Enrolled: {{ enrollment.date_joined|date:"M d, Y" }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-user-graduate empty-icon"></i>
+                            <h4 class="text-muted">No Students Enrolled</h4>
+                            <p class="text-muted">This course doesn't have any enrolled students yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4" data-aos="fade-up">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary me-3">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+        {% if user.is_staff %}
+        <a href="/admin/core/course/{{ course.id }}/change/" class="btn" style="background: var(--primary-gradient); color: white;">
+            <i class="fas fa-edit me-2"></i>Edit Course
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Animated counter
+    function animateCounter(element) {
+        const dataCount = element.getAttribute('data-count');
+        const target = parseInt(dataCount) || 0;
+        const duration = 2000;
+        let current = 0;
+        
+        if (target === 0) {
+            element.textContent = '0';
+            return;
+        }
+        
+        const increment = target / (duration / 16);
+        
+        const timer = setInterval(() => {
+            current += increment;
+            element.textContent = Math.floor(current);
+            
+            if (current >= target) {
+                element.textContent = target;
+                clearInterval(timer);
+            }
+        }, 16);
+    }
+    
+    // Initialize counters
+    document.addEventListener('DOMContentLoaded', function() {
+        const counters = document.querySelectorAll('[data-count]');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        counters.forEach(counter => observer.observe(counter));
+    });
+</script>
+{% endblock %}

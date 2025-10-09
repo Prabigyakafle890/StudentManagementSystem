@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Courses - EduManager{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 3rem 0;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+        animation: pulse-bg 4s ease-in-out infinite;
+    }
+    
+    .course-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+    }
+    
+    .course-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--primary-gradient);
+    }
+    
+    .course-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 50px rgba(102, 126, 234, 0.2);
+    }
+    
+    .course-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 15px;
+        background: var(--primary-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        margin-right: 1.5rem;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .course-card:hover .course-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    .course-title {
+        font-family: 'Poppins', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .course-code {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(79, 172, 254, 0.1) 100%);
+        color: var(--primary-color);
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+    
+    .course-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .info-badge {
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(226, 232, 240, 0.5);
+        padding: 0.5rem 1rem;
+        border-radius: 15px;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        transition: all 0.3s ease;
+    }
+    
+    .info-badge:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .view-btn {
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .view-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary-color);
+        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        font-family: 'Poppins', sans-serif;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        margin: 2rem 0;
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="page-header text-center" data-aos="fade-down">
+        <h1 class="page-title">
+            <i class="fas fa-book me-3"></i>My Courses
+        </h1>
+        <p class="lead mb-0" style="opacity: 0.9;">Explore and manage your course offerings</p>
+    </div>
+
+    <!-- Course Statistics -->
+    <div class="stats-grid" data-aos="fade-up">
+        <div class="stat-card">
+            <div class="stat-number" data-count="{{ courses.count }}">0</div>
+            <p class="mb-0 fw-bold">Total Courses</p>
+            <small class="text-muted">Active Courses</small>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" data-count="{{ total_students|default:0 }}">0</div>
+            <p class="mb-0 fw-bold">Total Students</p>
+            <small class="text-muted">Across All Courses</small>
+        </div>
+    </div>
+
+    <!-- Courses Grid -->
+    <div class="row" id="coursesContainer">
+        {% for course in courses %}
+        <div class="col-lg-6 course-item" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:200 }}">
+            <div class="course-card">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start">
+                        <div class="course-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h3 class="course-title">{{ course.name }}</h3>
+                            <div class="course-code">{{ course.code }}</div>
+                            
+                            <div class="course-info">
+                                <div class="info-badge">
+                                    <i class="fas fa-chalkboard-teacher me-2"></i>{{ course.teacher.name|default:"No teacher assigned" }}
+                                </div>
+                                <div class="info-badge">
+                                    <i class="fas fa-users me-2"></i>{{ course.enrollment_set.count }} Students
+                                </div>
+                            </div>
+                            
+                            <p class="text-muted mb-3">{{ course.description|truncatechars:120|default:"No description available." }}</p>
+                            
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'course_detail' course.id %}" class="view-btn">
+                                    <i class="fas fa-eye me-2"></i>View Course
+                                </a>
+                                {% if user.is_staff %}
+                                <a href="/admin/core/course/{{ course.id }}/change/" class="btn btn-outline-primary">
+                                    <i class="fas fa-edit me-1"></i>Edit
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="empty-state">
+                <i class="fas fa-book-open empty-icon"></i>
+                <h3 class="text-muted">No Courses Found</h3>
+                <p class="text-muted mb-4">
+                    {% if user.is_staff %}
+                        Start by adding your first course to the system.
+                    {% else %}
+                        You don't have any courses assigned yet.
+                    {% endif %}
+                </p>
+                {% if user.is_staff %}
+                <a href="/admin/core/course/add/" class="view-btn">
+                    <i class="fas fa-plus me-2"></i>Add First Course
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="text-center mt-4" data-aos="fade-up">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Animated counter
+    function animateCounter(element) {
+        const dataCount = element.getAttribute('data-count');
+        const target = parseInt(dataCount) || 0;
+        const duration = 2000;
+        let current = 0;
+        
+        if (target === 0) {
+            element.textContent = '0';
+            return;
+        }
+        
+        const increment = target / (duration / 16);
+        
+        const timer = setInterval(() => {
+            current += increment;
+            element.textContent = Math.floor(current);
+            
+            if (current >= target) {
+                element.textContent = target;
+                clearInterval(timer);
+            }
+        }, 16);
+    }
+    
+    // Initialize counters
+    document.addEventListener('DOMContentLoaded', function() {
+        const counters = document.querySelectorAll('[data-count]');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        counters.forEach(counter => observer.observe(counter));
+    });
+</script>
+{% endblock %}
