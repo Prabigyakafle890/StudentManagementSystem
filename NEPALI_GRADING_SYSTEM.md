@@ -53,7 +53,7 @@ print(f"GPA: {student.gpa}")  # e.g., "GPA: 3.43"
 ### Migration Applied
 - Added `grade_point` field to Grade model
 - Updated existing grades to new Nepali system
-- All students now have accurate GPAs
+- All students now have accurate GPAs  
 
 ## Sample Grade Distribution After Update
 

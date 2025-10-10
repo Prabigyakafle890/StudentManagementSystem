@@ -1,8 +1,6 @@
 Django==5.2.7
 djangorestframework==3.16.1
 djangorestframework-simplejwt==5.5.1
-whitenoise==6.6.0
-gunicorn==21.2.0
 PyJWT==2.10.1ngo==5.2.7
 djangorestframework==3.16.1
 djangorestframework-simplejwt==5.5.1
